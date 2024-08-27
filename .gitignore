@@ -1,0 +1,47 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.log
+
+# Django-specific
+*.sqlite3
+db.sqlite3
+*.env
+.env/
+*.py[cod]
+__pycache__/
+
+# Environment variables
+.env
+
+# Static files
+staticfiles/
+media/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local configuration files
+local_settings.py
+
+# Cache files
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Test data
+*.test
+
+# Logs
+*.log
