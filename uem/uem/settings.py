@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     
     'embed_video',
     'debug_toolbar',
+    'redisboard',
 ]
 
 
@@ -57,9 +58,9 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware', #added    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',    
-    'django.middleware.cache.UpdateCacheMiddleware', #added    
+    # 'django.middleware.cache.UpdateCacheMiddleware', #added    
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware', #added 
+    # 'django.middleware.cache.FetchFromCacheMiddleware', #added 
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -149,8 +150,10 @@ LOGIN_REDIRECT_URL = reverse_lazy('students:student_course_list')
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': '127.0.0.1:11211',
+        # 'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        # 'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'redis://127.0.0.1:6379',
     }
 }
 
