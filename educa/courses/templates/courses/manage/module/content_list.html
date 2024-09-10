@@ -95,7 +95,7 @@ sortable('#modules', {
         .catch(error => console.error('Error:', error));
 });
 
-const contentOrderUrl = '{% url "content_order" %}';
+const contentOrderUrl = '{% url "courses:content_order" %}';
 sortable('#module-contents', {
     forcePlaceholderSize: true,
     placeholderClass: 'placeholder'
