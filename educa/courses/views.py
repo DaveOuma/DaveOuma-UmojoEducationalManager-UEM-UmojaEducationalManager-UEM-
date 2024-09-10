@@ -20,9 +20,12 @@ from django.db.models import Count
 from .models import  Subject 
 from django.views.generic.detail import DetailView 
 
-from students.forms import CourseEnrollForm                           
+from students.forms import CourseEnrollForm
+
+import logging                           
 
 # Create your views here.
+logger = logging.getLogger(__name__)
 
 class OwnerMixin:
     def get_queryset(self):
@@ -44,19 +47,30 @@ class OwnerCourseMixin(OwnerMixin,
 class OwnerCourseEditMixin(OwnerCourseMixin, OwnerEditMixin):
     template_name = 'courses/manage/course/form.html'
 
+
+
 class ManageCourseListView(OwnerCourseMixin, ListView):
     template_name = 'courses/manage/course/list.html'
     permission_required = 'courses.view_course'
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        logger.debug(f'User: {self.request.user}, Queryset: {qs}')
+        return qs
+
+    def handle_no_permission(self):
+        logger.debug(f'Permission denied for user: {self.request.user}')
+        return super().handle_no_permission()
+
 class CourseCreateView(OwnerCourseEditMixin, CreateView):
-    permission_required = 'courses.add_course'
+    permission_required = 'courses:courses.add_course'
 
 class CourseUpdateView(OwnerCourseEditMixin, UpdateView):
-    permission_required = 'courses.change_course'
+    permission_required = 'courses:courses.change_course'
 
 class CourseDeleteView(OwnerCourseMixin, DeleteView):
     template_name = 'courses/manage/course/delete.html'
-    permission_required = 'courses.delete_course'
+    permission_required = 'courses:courses.delete_course'
 
 class CourseModuleUpdateView(TemplateResponseMixin, View):
     template_name = 'courses/manage/module/formset.html'
