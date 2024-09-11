@@ -29,7 +29,7 @@ class Course(models.Model):
     class Meta:
         ordering = ['-created'] 
     
-    def   str  (self):
+    def __str__(self):
         return self.title
     
     
@@ -66,6 +66,7 @@ class ItemBase(models.Model):
     
     class Meta:
         abstract = True
+        
     def __str__(self):
         return self.title
     
