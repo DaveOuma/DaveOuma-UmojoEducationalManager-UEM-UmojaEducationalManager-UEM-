@@ -14,7 +14,7 @@ from pathlib import Path
 from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-x(8-pt+^!#9xm!+&t8vfn-!%()ke%$v6u3hvl5ukk7c9bcun)@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -90,12 +90,12 @@ WSGI_APPLICATION = 'uem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -145,7 +145,7 @@ LOGIN_REDIRECT_URL = reverse_lazy('students:student_course_list')
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6380',
+        'LOCATION': 'redis://127.0.0.1:6379',
     }
 }
 
@@ -169,7 +169,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('127.0.0.1', 6380)],
+            'hosts': [('127.0.0.1', 6379)],
         },
     },
 }
