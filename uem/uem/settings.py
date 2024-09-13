@@ -13,11 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from django.urls import reverse_lazy
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -28,14 +25,14 @@ SECRET_KEY = 'django-insecure-x(8-pt+^!#9xm!+&t8vfn-!%()ke%$v6u3hvl5ukk7c9bcun)@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
 INSTALLED_APPS = [
     'students.apps.StudentsConfig',
     'courses.apps.CoursesConfig',
+    'chat.apps.ChatConfig',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,8 +45,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'redisboard',
     'rest_framework',
+    'channels',
 ]
-
 
 # DebugToolbarMiddleware has to be placed before any other middleware, except for
 # middleware that encodes the response’s content, such as GZipMiddleware, which, if present, should
@@ -89,6 +86,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'uem.wsgi.application'
 
 
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -98,7 +96,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -118,7 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -130,7 +126,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -141,20 +136,16 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = '/'
-
 LOGIN_REDIRECT_URL = reverse_lazy('students:student_course_list')
 
 CACHES = {
     'default': {
-        # 'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        # 'LOCATION': '127.0.0.1:11211',
-        'LOCATION': 'redis://127.0.0.1:6379',
+        'LOCATION': 'redis://127.0.0.1:6380',
     }
 }
 
@@ -166,9 +157,20 @@ CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 60 * 15 # 15 minutes
 CACHE_MIDDLEWARE_KEY_PREFIX = 'uem'
 
-
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES':[
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6380)],
+        },
+    },
+}
+ASGI_APPLICATION = 'uem.asgi.application'  # Use this line for ASGI configuration
