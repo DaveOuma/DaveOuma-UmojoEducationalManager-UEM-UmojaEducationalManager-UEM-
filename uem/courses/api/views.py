@@ -12,42 +12,107 @@ from courses.api.permissions import IsEnrolled
 from courses.api.serializers import CourseWithContentsSerializer
 
 
+class SubjectListView(generics.ListAPIView):
+    """
+    View to list all subjects.
 
-class SubjectListView(generics.ListAPIView): 
-    queryset = Subject.objects.all() 
-    serializer_class = SubjectSerializer
+    This view retrieves all Subject instances and serializes them
+    using the SubjectSerializer.
+    """
+    queryset = Subject.objects.all()  # Queryset to retrieve all subjects
+    serializer_class = SubjectSerializer  # Serializer for the subject data
 
-class SubjectDetailView(generics.RetrieveAPIView): 
-    queryset = Subject.objects.all()
-    serializer_class = SubjectSerializer
+
+class SubjectDetailView(generics.RetrieveAPIView):
+    """
+    View to retrieve details of a specific subject.
+
+    This view retrieves a Subject instance by its primary key and 
+    serializes it using the SubjectSerializer.
+    """
+    queryset = Subject.objects.all()  # Queryset to retrieve all subjects
+    serializer_class = SubjectSerializer  # Serializer for the subject data
 
 
 class CourseEnrollView(APIView):
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    
+    """
+    View to enroll a user in a course.
+
+    This view allows authenticated users to enroll in a specific 
+    course identified by its primary key.
+    """
+    authentication_classes = [BasicAuthentication]  # Authentication classes
+    permission_classes = [IsAuthenticated]  # Permission classes for authenticated users
+
     def post(self, request, pk, format=None):
-        course = get_object_or_404(Course, pk=pk)
-        course.students.add(request.user)
-        return Response({'enrolled': True})
+        """
+        Handle POST request for enrolling a user in a course.
+
+        Args:
+            request (Request): The request object containing user information.
+            pk (int): The primary key of the course to enroll in.
+            format: Optional format for the response.
+
+        Returns:
+            Response: A response indicating successful enrollment.
+        """
+        course = get_object_or_404(Course, pk=pk)  # Retrieve the course or return a 404 error
+        course.students.add(request.user)  # Add the user to the course's students
+        return Response({'enrolled': True})  # Return a success response
+
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Course.objects.all()
-    serializer_class = CourseSerializer
+    """
+    ViewSet for listing and retrieving courses.
+
+    This viewset provides the standard actions for viewing Course 
+    instances, along with additional actions for enrollment and 
+    retrieving course contents.
+    """
+    queryset = Course.objects.all()  # Queryset to retrieve all courses
+    serializer_class = CourseSerializer  # Serializer for the course data
 
     @action(detail=True,
-        methods=['post'],
-        authentication_classes=[BasicAuthentication],
-        permission_classes=[IsAuthenticated])
+            methods=['post'],
+            authentication_classes=[BasicAuthentication],
+            permission_classes=[IsAuthenticated])
     def enroll(self, request, *args, **kwargs):
-        course = self.get_object()
-        course.students.add(request.user)
-        return Response({'enrolled': True})
+        """
+        Enroll a user in a specific course.
+
+        This action allows authenticated users to enroll in a course 
+        identified by its primary key.
+
+        Args:
+            request (Request): The request object containing user information.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Response: A response indicating successful enrollment.
+        """
+        course = self.get_object()  # Retrieve the course using the viewset's method
+        course.students.add(request.user)  # Add the user to the course's students
+        return Response({'enrolled': True})  # Return a success response
 
     @action(detail=True,
-        methods=['get'],
-        serializer_class=CourseWithContentsSerializer,
-        authentication_classes=[BasicAuthentication],
-        permission_classes=[IsAuthenticated, IsEnrolled])
+            methods=['get'],
+            serializer_class=CourseWithContentsSerializer,
+            authentication_classes=[BasicAuthentication],
+            permission_classes=[IsAuthenticated, IsEnrolled])
     def contents(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        """
+        Retrieve contents of a specific course.
+
+        This action returns the contents of a course if the user is 
+        enrolled in it.
+
+        Args:
+            request (Request): The request object.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Response: A response containing the course contents.
+        """
+        return self.retrieve(request, *args, **kwargs)  # Use the retrieve method to return course contents

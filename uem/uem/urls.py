@@ -1,18 +1,7 @@
 """
-URL configuration for educa project.
+URL configuration for the educa project, which manages courses and user accounts.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+This module maps URL patterns to views for handling courses, authentication, and other functionalities.
 """
 import debug_toolbar
 from django.contrib import admin
@@ -23,21 +12,20 @@ from django.contrib.auth import views as auth_views
 from courses.views import CourseListView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('course/', include('courses.urls', namespace='courses')),
-    path('', CourseListView.as_view(), name='course_list'),
-    path('students/', include('students.urls', namespace='students')),
-    path('__debug__/', include(debug_toolbar.urls)),
-    path('api/', include('courses.api.urls', namespace='api')),
-    path('chat/', include('chat.urls', namespace='chat')),  
+    path('admin/', admin.site.urls),  # Admin site URL
+    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),  # Login page
+    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),  # Logout page
+    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),  # Password reset
+    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),  # After password reset
+    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),  # Password reset confirm
+    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),  # After reset complete
+    path('course/', include('courses.urls', namespace='courses')),  # Course URLs
+    path('', CourseListView.as_view(), name='course_list'),  # Course list view
+    path('students/', include('students.urls', namespace='students')),  # Student URLs
+    path('__debug__/', include(debug_toolbar.urls)),  # Debug toolbar for development
+    path('api/', include('courses.api.urls', namespace='api')),  # API URLs
+    path('chat/', include('chat.urls', namespace='chat')),  # Chat URLs
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # Serve media files in development
