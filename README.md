@@ -1,5 +1,5 @@
 # Umoja E-Learning Platform
-
+![alt text](image.png)
 
 ## Introduction
 
