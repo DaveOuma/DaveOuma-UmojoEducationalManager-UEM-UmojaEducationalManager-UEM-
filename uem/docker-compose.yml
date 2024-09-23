@@ -1,4 +1,3 @@
-version: '3'
 services:
   db:
     image: postgres:latest
@@ -26,4 +25,4 @@ services:
     depends_on:
       - db
 
-    working_dir: /code  # Set to the directory where 'manage.py' resides
+    working_dir: "/code/uem"  # Set to the directory where 'manage.py' resides
