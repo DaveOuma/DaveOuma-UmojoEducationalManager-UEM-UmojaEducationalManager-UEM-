@@ -1,28 +1,48 @@
+version: '3.8'  # Add a version to your compose file
+
 services:
   db:
     image: postgres:latest
     restart: always
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - uem_db_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  
+  cache:
+    image: redis:latest
+    restart: always
+    volumes:
+      - ./uem_db_data/cache:/data
 
   web:
     build: .
-    command: ["./wait-for-it.sh", "db:5432", "--", "python", "/code/uem/manage.py", "runserver", "0.0.0.0:8000"]
+    user: root
+    command: ["/code/wait-for-it.sh", "db:5432", "--", "uwsgi", "--ini", "/code/config/uwsgi/uwsgi.ini"]
     restart: always
     volumes:
       - .:/code  # Use an absolute path for the volume
     ports:
-      - "8000:8000"
+      - "8080:80"
     environment:
-      - DJANGO_SETTINGS_MODULE=uem.settings.prod      
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      DJANGO_SETTINGS_MODULE: uem.settings.prod      
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     depends_on:
       - db
+      - cache
 
-    working_dir: "/code/uem"  # Set to the directory where 'manage.py' resides
+  nginx:  # Correctly indented under services
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./config/nginx:/etc/nginx/templates
+      - .:/code
+    ports:
+      - "80:80"
+
+volumes:
+  uem_db_data:
