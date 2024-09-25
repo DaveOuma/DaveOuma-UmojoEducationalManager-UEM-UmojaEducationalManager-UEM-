@@ -1,9 +1,27 @@
 upstream uwsgi_app {
-    server unix:/code/uem/uwsgi_app.sock;
+    server unix:///tmp/mysite.sock;
 }
 
 server {
     listen 80;
+    server_name www.uemproject.com uemproject.com;
+    return 301 https://$host$request_uri;
+
+
+}
+
+upstream daphne {
+    server unix:///tmp/mysite.sock;
+}
+
+    
+
+
+
+server {
+    listen 443 ssl;
+    ssl_certificate /code/uem/ssl/uem.crt;
+    ssl_certificate_key /code/uem/ssl/uem.key;
     server_name www.uemproject.com uemproject.com;
     error_log stderr warn;
     access_log /dev/stdout main;
@@ -11,5 +29,25 @@ server {
     location / {
         include /etc/nginx/uwsgi_params;
         uwsgi_pass uwsgi_app;
+    }
+
+
+location /ws/ {
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_redirect off;
+    proxy_pass http://daphne;
+    
+}
+
+
+location /static/ {
+        alias /code/uem/static/;
+
+    }
+
+location /media/ {
+        alias /code/uem/media/;
     }
 }

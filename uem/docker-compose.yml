@@ -1,5 +1,3 @@
-version: '3.8'  # Add a version to your compose file
-
 services:
   db:
     image: postgres:latest
@@ -35,14 +33,33 @@ services:
       - db
       - cache
 
-  nginx:  # Correctly indented under services
-    image: nginx:latest
+  nginx:
+    image: nginx:1.23.1
     restart: always
     volumes:
       - ./config/nginx:/etc/nginx/templates
       - .:/code
     ports:
       - "80:80"
+      - "443:443"
+
+  daphne:  # Correctly indented under services
+    build: .
+    working_dir: /code/uem/
+    command: ["/code/wait-for-it.sh", "db:5432", "--",
+              "daphne", "-u", "/tmp/daphne.sock",
+              "uem.asgi:application"]
+    restart: always
+    volumes:
+      - .:/code
+    environment:
+      - DJANGO_SETTINGS_MODULE=uem.settings.prod
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
+      - cache
 
 volumes:
   uem_db_data:
